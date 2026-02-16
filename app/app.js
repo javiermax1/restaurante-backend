@@ -1,14 +1,23 @@
+// carga de los módulos necesarios:
+// const express = require('express')
+// const cors = require('cors')
+// const mysql = require('mysql2')
+// const dotenv = require('dotenv')
+
 const express = require('express')
 const cors = require('cors')
 const mysql = require('mysql2')
 require('dotenv').config()
 
+// create an Express app -> es el servidor web de Node.js que escucha las peticiones
 const app = express()
+// configuro cors para permitir peticiones desde cualquier origen
 app.use(cors())
 const port = 3000
 let db
 
 // Function to establish a connection with retries
+// connexión con intentos de reconexión
 function connectWithRetry() {
   db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -16,8 +25,8 @@ function connectWithRetry() {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
   })
-
   // Attempt to connect
+  // intento de conexión
   db.connect((err) => {
     if (err) {
       console.error('Error connecting to MySQL:', err)
@@ -33,8 +42,10 @@ function connectWithRetry() {
 // Start the connection with retries
 connectWithRetry()
 
+// ENDPOINTS rutas de acceso a los datos
 // Define your endpoints
 
+// SQL query a respuesta.json
 // Get all categories
 app.get('/categories', (req, res) => {
   db.query('SELECT * FROM categorias', (err, results) => {
@@ -42,7 +53,7 @@ app.get('/categories', (req, res) => {
       console.error('Error executing query:', err)
       res.status(500).json({ error: 'Internal Server Error' })
     } else {
-      res.json(results)
+      res.json(results) // enviar los resultados en la respuesta res.satus(200)
     }
   })
 })
@@ -108,7 +119,7 @@ app.get('/order/:orderId/dishes', (req, res) => {
       } else {
         res.json(results)
       }
-    }
+    },
   )
 })
 
